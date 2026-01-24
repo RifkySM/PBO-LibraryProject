@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.pbolibraryproject.controllers.MemberListController"
+      spacing="20" styleClass="page-content">
+
+    <!-- Action Bar -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Button text="+ Add Member" styleClass="primary-button" onAction="#addMember">
+            <padding>
+                <Insets top="10" bottom="10" left="20" right="20"/>
+            </padding>
+            <font>
+                <Font size="13"/>
+            </font>
+        </Button>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Search members..." styleClass="search-field" prefWidth="250">
+            <padding>
+                <Insets top="8" bottom="8" left="15" right="15"/>
+            </padding>
+        </TextField>
+    </HBox>
+
+    <!-- Members Table -->
+    <TableView fx:id="membersTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colMemberId" text="Member ID" prefWidth="100"/>
+            <TableColumn fx:id="colName" text="Name" prefWidth="200"/>
+            <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+            <TableColumn fx:id="colPhone" text="Phone" prefWidth="150"/>
+            <TableColumn fx:id="colJoinDate" text="Join Date" prefWidth="120"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <!-- Summary Bar -->
+    <HBox spacing="20" alignment="CENTER_LEFT" styleClass="summary-bar">
+        <padding>
+            <Insets top="15" bottom="15" left="20" right="20"/>
+        </padding>
+        <Label fx:id="totalMembersLabel" text="Total Members: 0" styleClass="summary-text">
+            <font>
+                <Font size="13"/>
+            </font>
+        </Label>
+    </HBox>
+</VBox>

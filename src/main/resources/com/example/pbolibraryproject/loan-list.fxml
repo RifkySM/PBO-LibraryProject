@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.pbolibraryproject.controllers.LoanListController"
+      spacing="20" styleClass="page-content">
+
+    <!-- Action Bar -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Button text="+ New Loan" styleClass="primary-button" onAction="#createLoan">
+            <padding>
+                <Insets top="10" bottom="10" left="20" right="20"/>
+            </padding>
+            <font>
+                <Font size="13"/>
+            </font>
+        </Button>
+        <Region HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="filterComboBox" promptText="Filter by status" styleClass="filter-combo" prefWidth="150"/>
+        <TextField fx:id="searchField" promptText="Search loans..." styleClass="search-field" prefWidth="250">
+            <padding>
+                <Insets top="8" bottom="8" left="15" right="15"/>
+            </padding>
+        </TextField>
+    </HBox>
+
+    <!-- Loans Table -->
+    <TableView fx:id="loansTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colLoanId" text="Loan ID" prefWidth="80"/>
+            <TableColumn fx:id="colMemberName" text="Member Name" prefWidth="180"/>
+            <TableColumn fx:id="colBookTitle" text="Book Title" prefWidth="200"/>
+            <TableColumn fx:id="colLoanDate" text="Loan Date" prefWidth="120"/>
+            <TableColumn fx:id="colDueDate" text="Due Date" prefWidth="120"/>
+            <TableColumn fx:id="colReturnDate" text="Return Date" prefWidth="120"/>
+            <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <!-- Summary Bar -->
+    <HBox spacing="20" alignment="CENTER_LEFT" styleClass="summary-bar">
+        <padding>
+            <Insets top="15" bottom="15" left="20" right="20"/>
+        </padding>
+        <Label fx:id="totalLoansLabel" text="Total Loans: 0" styleClass="summary-text">
+            <font>
+                <Font size="13"/>
+            </font>
+        </Label>
+        <Separator orientation="VERTICAL"/>
+        <Label fx:id="activeLoansLabel" text="Active: 0" styleClass="summary-text">
+            <font>
+                <Font size="13"/>
+            </font>
+        </Label>
+        <Separator orientation="VERTICAL"/>
+        <Label fx:id="overdueLoansLabel" text="Overdue: 0" styleClass="summary-text">
+            <font>
+                <Font size="13"/>
+            </font>
+        </Label>
+        <Separator orientation="VERTICAL"/>
+        <Label fx:id="returnedLoansLabel" text="Returned: 0" styleClass="summary-text">
+            <font>
+                <Font size="13"/>
+            </font>
+        </Label>
+    </HBox>
+</VBox>
