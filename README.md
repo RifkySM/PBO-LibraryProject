@@ -178,24 +178,6 @@ The `data/` folder is created automatically on first run.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 🐛 Known Issues
-
-None at the moment. Please report issues on the GitHub issue tracker.
 
 ## 🔮 Future Enhancements
 
@@ -208,10 +190,6 @@ None at the moment. Please report issues on the GitHub issue tracker.
 - [ ] Book categories and tags
 - [ ] Fine calculation for overdue books
 - [ ] Book recommendations
-
-## 📞 Support
-
-For support, email your.email@example.com or open an issue on GitHub.
 
 ## 🙏 Acknowledgments
 
