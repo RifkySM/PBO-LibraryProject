@@ -22,12 +22,14 @@ public class Loan implements TransactionProcess{
     }
 
     @Override
-    public void processTransaction() {
+    public boolean processTransaction() {
         if (book.getStock() > 0 && member.isActive()) {
             book.setStock(book.getStock() - 1);
             System.out.println("Loan processed for: " + book.getTitle());
+            return true;
         } else {
             System.out.println("Transaction Failed: Stock empty or Member inactive.");
+            return false;
         }
     }
 

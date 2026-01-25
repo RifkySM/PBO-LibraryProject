@@ -8,8 +8,9 @@ public class Book {
     private String publisher;
     private int year;
     private int stock;
+    private int maxStock;
 
-    public Book(String bookId, String title, String author, String isbn, String publisher, int year, int stock) {
+    public Book(String bookId, String title, String author, String isbn, String publisher, int year, int stock, int maxStock) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
@@ -17,10 +18,11 @@ public class Book {
         this.publisher = publisher;
         this.year = year;
         this.stock = stock;
+        this.maxStock = maxStock;
     }
 
-    public Book(String bookId, String title, String author, int stock) {
-        this(bookId, title, author, "", "", 0, stock);
+    public Book(String bookId, String title, String author, int stock, int maxStock) {
+        this(bookId, title, author, "", "", 0, stock, maxStock);
     }
 
     // Getters and Setters
@@ -45,6 +47,9 @@ public class Book {
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
 
+    public int getMaxStock() { return maxStock; }
+    public void setMaxStock(int maxStock) { this.maxStock = maxStock; }
+
     public boolean isAvailable() {
         return stock > 0;
     }
@@ -55,6 +60,6 @@ public class Book {
 
     @Override
     public String toString() {
-        return title + " (Stock: " + stock + ")";
+        return title + " (Stock: " + stock + "/" + maxStock + ")";
     }
 }

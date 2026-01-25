@@ -95,15 +95,22 @@ public class LoanService {
                 .orElse(null);
     }
 
-    public void createLoan(Loan loan) {
-        loan.processTransaction();
-        loans.add(loan);
-        saveToCSV();
+    public boolean createLoan(Loan loan) {
+        boolean success = loan.processTransaction();
+        if (success) {
+            loans.add(loan);
+            saveToCSV();
+            // Save updated book stock to CSV
+            bookService.updateBook(loan.getBook());
+        }
+        return success;
     }
 
     public void returnLoan(Loan loan) {
         loan.cancelTransaction();
         saveToCSV();
+        // Save updated book stock to CSV
+        bookService.updateBook(loan.getBook());
     }
 
     public void deleteLoan(Loan loan) {

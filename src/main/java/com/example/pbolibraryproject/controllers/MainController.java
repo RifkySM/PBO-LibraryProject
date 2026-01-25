@@ -14,6 +14,8 @@ import java.io.IOException;
 
 public class MainController {
 
+    private static MainController instance;
+
     @FXML private VBox sidebar;
     @FXML private StackPane contentStack;
     @FXML private Label pageTitle;
@@ -29,30 +31,34 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Load default page (Dashboard)
+        instance = this;
         showDashboard();
     }
 
+    public static MainController getInstance() {
+        return instance;
+    }
+
     @FXML
-    private void showDashboard() {
+    public void showDashboard() {
         loadPage("dashboard.fxml", "Dashboard");
         setActiveButton(btnDashboard);
     }
 
     @FXML
-    private void showMembers() {
+    public void showMembers() {
         loadPage("member-list.fxml", "Members");
         setActiveButton(btnMembers);
     }
 
     @FXML
-    private void showBooks() {
+    public void showBooks() {
         loadPage("book-list.fxml", "Books");
         setActiveButton(btnBooks);
     }
 
     @FXML
-    private void showLoans() {
+    public void showLoans() {
         loadPage("loan-list.fxml", "Loans");
         setActiveButton(btnLoans);
     }

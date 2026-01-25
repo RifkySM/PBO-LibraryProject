@@ -1,8 +1,11 @@
 package com.example.pbolibraryproject.controllers;
 
+import com.example.pbolibraryproject.models.Loan;
 import com.example.pbolibraryproject.service.BookService;
 import com.example.pbolibraryproject.service.LoanService;
 import com.example.pbolibraryproject.service.MemberService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -10,6 +13,9 @@ import javafx.scene.control.TableView;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DashboardController {
 
@@ -23,10 +29,10 @@ public class DashboardController {
     @FXML private Label totalLoansLabel;
     @FXML private Label activeLoansLabel;
     @FXML private Label overdueLoansLabel;
-    @FXML private TableView<?> recentActivityTable;
-    @FXML private TableColumn<?, ?> colActivityType;
-    @FXML private TableColumn<?, ?> colActivityDescription;
-    @FXML private TableColumn<?, ?> colActivityDate;
+    @FXML private TableView<Loan> recentActivityTable;
+    @FXML private TableColumn<Loan, String> colActivityType;
+    @FXML private TableColumn<Loan, String> colActivityDescription;
+    @FXML private TableColumn<Loan, String> colActivityDate;
 
     private BookService bookService;
     private MemberService memberService;
@@ -38,7 +44,9 @@ public class DashboardController {
         memberService = new MemberService();
         loanService = new LoanService();
 
+        setupRecentActivityTable();
         loadStatistics();
+        loadRecentActivity();
         updateDate();
     }
 
@@ -79,26 +87,76 @@ public class DashboardController {
         overdueLoansLabel.setText(String.valueOf(overdueLoans));
     }
 
+    private void setupRecentActivityTable() {
+        colActivityType.setCellValueFactory(cellData -> {
+            Loan loan = cellData.getValue();
+            String type = loan.getIsReturned() ? "Return" : "Loan";
+            return new javafx.beans.property.SimpleStringProperty(type);
+        });
+
+        colActivityDescription.setCellValueFactory(cellData -> {
+            Loan loan = cellData.getValue();
+            String description = loan.getBook().getTitle() + " - " + loan.getMember().getName();
+            return new javafx.beans.property.SimpleStringProperty(description);
+        });
+
+        colActivityDate.setCellValueFactory(cellData -> {
+            Loan loan = cellData.getValue();
+            LocalDate activityDate = loan.getIsReturned() && loan.getReturnDate() != null
+                ? loan.getReturnDate()
+                : loan.getLoanDate();
+            return new javafx.beans.property.SimpleStringProperty(activityDate.toString());
+        });
+    }
+
+    private void loadRecentActivity() {
+        List<Loan> allLoans = loanService.getAllLoans();
+
+        // Sort by most recent activity (return date if returned, loan date otherwise)
+        List<Loan> recentLoans = allLoans.stream()
+                .sorted((loan1, loan2) -> {
+                    LocalDate date1 = loan1.getIsReturned() && loan1.getReturnDate() != null
+                        ? loan1.getReturnDate()
+                        : loan1.getLoanDate();
+                    LocalDate date2 = loan2.getIsReturned() && loan2.getReturnDate() != null
+                        ? loan2.getReturnDate()
+                        : loan2.getLoanDate();
+                    return date2.compareTo(date1); // Most recent first
+                })
+                .limit(10) // Show only the 10 most recent activities
+                .collect(Collectors.toList());
+
+        ObservableList<Loan> activityList = FXCollections.observableArrayList(recentLoans);
+        recentActivityTable.setItems(activityList);
+    }
+
     public void refreshDashboard() {
         loadStatistics();
+        loadRecentActivity();
         updateDate();
     }
 
     @FXML
     private void navigateToBooks() {
-        // This will be handled by the main controller
-        System.out.println("Navigate to Books");
+        MainController mainController = MainController.getInstance();
+        if (mainController != null) {
+            mainController.showBooks();
+        }
     }
 
     @FXML
     private void navigateToMembers() {
-        // This will be handled by the main controller
-        System.out.println("Navigate to Members");
+        MainController mainController = MainController.getInstance();
+        if (mainController != null) {
+            mainController.showMembers();
+        }
     }
 
     @FXML
     private void navigateToLoans() {
-        // This will be handled by the main controller
-        System.out.println("Navigate to Loans");
+        MainController mainController = MainController.getInstance();
+        if (mainController != null) {
+            mainController.showLoans();
+        }
     }
 }

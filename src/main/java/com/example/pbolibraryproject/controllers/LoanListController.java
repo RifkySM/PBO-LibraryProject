@@ -108,7 +108,14 @@ public class LoanListController {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(5, returnButton, viewButton);
+                    Loan loan = getTableView().getItems().get(getIndex());
+                    javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(5);
+
+                    // Only show return button if loan is not returned
+                    if (!loan.getIsReturned()) {
+                        buttons.getChildren().add(returnButton);
+                    }
+                    buttons.getChildren().add(viewButton);
                     setGraphic(buttons);
                 }
             }
@@ -134,10 +141,15 @@ public class LoanListController {
         ObservableList<Loan> filtered = FXCollections.observableArrayList();
 
         for (Loan loan : loansList) {
-            boolean matchesSearch = searchText == null || searchText.isEmpty();
-            boolean matchesStatus = statusFilter.equals("All");
+            boolean matchesSearch = searchText == null || searchText.isEmpty() ||
+                    loan.getLoanId().toLowerCase().contains(searchText.toLowerCase()) ||
+                    loan.getMember().getName().toLowerCase().contains(searchText.toLowerCase()) ||
+                    loan.getBook().getTitle().toLowerCase().contains(searchText.toLowerCase());
 
-            // Add filtering logic here based on your Loan model
+            boolean matchesStatus = statusFilter.equals("All") ||
+                    (statusFilter.equals("Active") && !loan.getIsReturned() && !loan.isOverdue()) ||
+                    (statusFilter.equals("Overdue") && loan.isOverdue()) ||
+                    (statusFilter.equals("Returned") && loan.getIsReturned());
 
             if (matchesSearch && matchesStatus) {
                 filtered.add(loan);
@@ -218,8 +230,29 @@ public class LoanListController {
 
         dialog.showAndWait().ifPresent(result -> {
             if (result != null) {
-                loanService.createLoan(result);
-                loadLoans();
+                boolean success = loanService.createLoan(result);
+                if (success) {
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText("Loan Created Successfully");
+                    successAlert.setContentText("Book: " + result.getBook().getTitle() + "\nMember: " + result.getMember().getName());
+                    successAlert.showAndWait();
+                    loadLoans();
+                } else {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Loan Creation Failed");
+                    errorAlert.setHeaderText("Unable to create loan");
+                    String errorMessage = "";
+                    if (result.getBook().getStock() <= 0) {
+                        errorMessage = "The selected book is out of stock.";
+                    } else if (!result.getMember().isActive()) {
+                        errorMessage = "The selected member is not active.";
+                    } else {
+                        errorMessage = "Stock is empty or member is inactive.";
+                    }
+                    errorAlert.setContentText(errorMessage);
+                    errorAlert.showAndWait();
+                }
             }
         });
     }
@@ -264,11 +297,19 @@ public class LoanListController {
 
     private void updateSummary() {
         int total = loansTable.getItems().size();
-        // Add actual counting logic based on your Loan model
+        long active = loansTable.getItems().stream()
+                .filter(loan -> !loan.getIsReturned() && !loan.isOverdue())
+                .count();
+        long overdue = loansTable.getItems().stream()
+                .filter(Loan::isOverdue)
+                .count();
+        long returned = loansTable.getItems().stream()
+                .filter(Loan::getIsReturned)
+                .count();
 
         totalLoansLabel.setText("Total Loans: " + total);
-        activeLoansLabel.setText("Active: 0");
-        overdueLoansLabel.setText("Overdue: 0");
-        returnedLoansLabel.setText("Returned: 0");
+        activeLoansLabel.setText("Active: " + active);
+        overdueLoansLabel.setText("Overdue: " + overdue);
+        returnedLoansLabel.setText("Returned: " + returned);
     }
 }

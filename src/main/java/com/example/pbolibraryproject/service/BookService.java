@@ -22,9 +22,14 @@ public class BookService {
         } else {
             List<String[]> data = CSVUtil.readCSV(CSV_FILE);
             for (String[] row : data) {
-                if (row.length >= 7) {
+                if (row.length >= 8) {
                     Book book = new Book(row[0], row[1], row[2], row[3], row[4],
-                        Integer.parseInt(row[5]), Integer.parseInt(row[6]));
+                        Integer.parseInt(row[5]), Integer.parseInt(row[6]), Integer.parseInt(row[7]));
+                    books.add(book);
+                } else if (row.length >= 7) {
+                    // Backward compatibility: if maxStock is missing, set it equal to stock
+                    Book book = new Book(row[0], row[1], row[2], row[3], row[4],
+                        Integer.parseInt(row[5]), Integer.parseInt(row[6]), Integer.parseInt(row[6]));
                     books.add(book);
                 }
             }
@@ -41,7 +46,8 @@ public class BookService {
                 book.getIsbn(),
                 book.getPublisher(),
                 String.valueOf(book.getYear()),
-                String.valueOf(book.getStock())
+                String.valueOf(book.getStock()),
+                String.valueOf(book.getMaxStock())
             };
             data.add(row);
         }
@@ -50,13 +56,13 @@ public class BookService {
 
     private void loadSampleData() {
         books.add(new Book("B001", "The Great Gatsby", "F. Scott Fitzgerald",
-            "978-0-7432-7356-5", "Scribner", 1925, 5));
+            "978-0-7432-7356-5", "Scribner", 1925, 5, 5));
         books.add(new Book("B002", "To Kill a Mockingbird", "Harper Lee",
-            "978-0-06-112008-4", "J.B. Lippincott & Co.", 1960, 3));
+            "978-0-06-112008-4", "J.B. Lippincott & Co.", 1960, 3, 3));
         books.add(new Book("B003", "1984", "George Orwell",
-            "978-0-452-28423-4", "Secker & Warburg", 1949, 7));
+            "978-0-452-28423-4", "Secker & Warburg", 1949, 7, 7));
         books.add(new Book("B004", "Pride and Prejudice", "Jane Austen",
-            "978-0-14-143951-8", "T. Egerton", 1813, 4));
+            "978-0-14-143951-8", "T. Egerton", 1813, 4, 4));
     }
 
     public List<Book> getAllBooks() {

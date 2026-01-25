@@ -17,6 +17,8 @@ public class BookListController {
     @FXML private TableColumn<Book, String> colIsbn;
     @FXML private TableColumn<Book, String> colPublisher;
     @FXML private TableColumn<Book, String> colYear;
+    @FXML private TableColumn<Book, String> colStock;
+    @FXML private TableColumn<Book, String> colMaxStock;
     @FXML private TableColumn<Book, String> colStatus;
     @FXML private TableColumn<Book, Void> colActions;
     @FXML private TextField searchField;
@@ -52,6 +54,10 @@ public class BookListController {
             new javafx.beans.property.SimpleStringProperty(
                 cellData.getValue().getYear() > 0 ?
                 String.valueOf(cellData.getValue().getYear()) : ""));
+        colStock.setCellValueFactory(cellData ->
+            new javafx.beans.property.SimpleStringProperty(String.valueOf(cellData.getValue().getStock())));
+        colMaxStock.setCellValueFactory(cellData ->
+            new javafx.beans.property.SimpleStringProperty(String.valueOf(cellData.getValue().getMaxStock())));
         colStatus.setCellValueFactory(cellData ->
             new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStatus()));
 
@@ -149,6 +155,7 @@ public class BookListController {
         TextField publisherField = new TextField();
         TextField yearField = new TextField();
         TextField stockField = new TextField();
+        TextField maxStockField = new TextField();
 
         if (book != null) {
             idField.setText(book.getBookId());
@@ -159,6 +166,7 @@ public class BookListController {
             publisherField.setText(book.getPublisher());
             yearField.setText(book.getYear() > 0 ? String.valueOf(book.getYear()) : "");
             stockField.setText(String.valueOf(book.getStock()));
+            maxStockField.setText(String.valueOf(book.getMaxStock()));
         } else {
             idField.setText(bookService.generateBookId());
             idField.setDisable(true);
@@ -176,8 +184,10 @@ public class BookListController {
         grid.add(publisherField, 1, 4);
         grid.add(new Label("Year:"), 0, 5);
         grid.add(yearField, 1, 5);
-        grid.add(new Label("Stock:"), 0, 6);
+        grid.add(new Label("Current Stock:"), 0, 6);
         grid.add(stockField, 1, 6);
+        grid.add(new Label("Max Stock:"), 0, 7);
+        grid.add(maxStockField, 1, 7);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -186,6 +196,15 @@ public class BookListController {
                 try {
                     int year = yearField.getText().isEmpty() ? 0 : Integer.parseInt(yearField.getText());
                     int stock = Integer.parseInt(stockField.getText());
+                    int maxStock = Integer.parseInt(maxStockField.getText());
+
+                    if (stock > maxStock) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Invalid Input");
+                        alert.setHeaderText("Current stock cannot exceed max stock");
+                        alert.showAndWait();
+                        return null;
+                    }
 
                     return new Book(
                         idField.getText(),
@@ -194,12 +213,13 @@ public class BookListController {
                         isbnField.getText(),
                         publisherField.getText(),
                         year,
-                        stock
+                        stock,
+                        maxStock
                     );
                 } catch (NumberFormatException e) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Invalid Input");
-                    alert.setHeaderText("Please enter valid numbers for Year and Stock");
+                    alert.setHeaderText("Please enter valid numbers for Year, Stock, and Max Stock");
                     alert.showAndWait();
                     return null;
                 }

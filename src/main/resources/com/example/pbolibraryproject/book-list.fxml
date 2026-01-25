@@ -36,6 +36,8 @@
             <TableColumn fx:id="colIsbn" text="ISBN" prefWidth="130"/>
             <TableColumn fx:id="colPublisher" text="Publisher" prefWidth="150"/>
             <TableColumn fx:id="colYear" text="Year" prefWidth="80"/>
+            <TableColumn fx:id="colStock" text="Current Stock" prefWidth="100"/>
+            <TableColumn fx:id="colMaxStock" text="Max Stock" prefWidth="90"/>
             <TableColumn fx:id="colStatus" text="Status" prefWidth="100"/>
             <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
         </columns>
