@@ -173,13 +173,34 @@ public class MemberListController {
 
         dialog.getDialogPane().setContent(grid);
 
+        // Add validation
+        javafx.scene.Node saveButton = dialog.getDialogPane().lookupButton(saveButtonType);
+        saveButton.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+            String validationError = validateMemberInput(
+                nameField.getText(),
+                emailField.getText(),
+                phoneField.getText(),
+                joinDatePicker.getValue(),
+                member != null ? member.getId() : null
+            );
+
+            if (validationError != null) {
+                event.consume();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Validation Error");
+                alert.setHeaderText("Invalid Input");
+                alert.setContentText(validationError);
+                alert.showAndWait();
+            }
+        });
+
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
                 Member newMember = new Member(
                     idField.getText(),
-                    nameField.getText(),
-                    emailField.getText(),
-                    phoneField.getText(),
+                    nameField.getText().trim(),
+                    emailField.getText().trim(),
+                    phoneField.getText().trim(),
                     joinDatePicker.getValue()
                 );
                 newMember.setActive(activeCheckBox.isSelected());
@@ -228,5 +249,58 @@ public class MemberListController {
 
     private void updateSummary() {
         totalMembersLabel.setText("Total Members: " + membersTable.getItems().size());
+    }
+
+    private String validateMemberInput(String name, String email, String phone,
+                                      java.time.LocalDate joinDate, String currentMemberId) {
+        // Validate name
+        if (name == null || name.trim().isEmpty()) {
+            return "Name is required and cannot be empty.";
+        }
+
+        if (name.trim().length() < 2) {
+            return "Name must be at least 2 characters long.";
+        }
+
+        // Validate email
+        if (email == null || email.trim().isEmpty()) {
+            return "Email is required and cannot be empty.";
+        }
+
+        if (!isValidEmail(email.trim())) {
+            return "Please enter a valid email address.\nExample: user@example.com";
+        }
+
+        // Check for duplicate email
+        if (memberService.isEmailExists(email.trim(), currentMemberId)) {
+            return "This email address is already registered by another member.";
+        }
+
+        // Validate phone (optional, but if provided must be valid)
+        if (phone != null && !phone.trim().isEmpty() && !isValidPhone(phone.trim())) {
+            return "Please enter a valid phone number.\nExample: +1234567890 or 081234567890";
+        }
+
+        // Validate join date
+        if (joinDate == null) {
+            return "Join date is required.";
+        }
+
+        if (joinDate.isAfter(java.time.LocalDate.now())) {
+            return "Join date cannot be in the future.";
+        }
+
+        return null;
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return email.matches(emailRegex);
+    }
+
+    private boolean isValidPhone(String phone) {
+        // Accept phone numbers with or without + prefix, spaces, dashes, or parentheses
+        String phoneRegex = "^[+]?[(]?[0-9]{1,4}[)]?[-\\s.]?[(]?[0-9]{1,4}[)]?[-\\s.]?[0-9]{1,9}$";
+        return phone.matches(phoneRegex);
     }
 }

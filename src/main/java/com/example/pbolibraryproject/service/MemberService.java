@@ -1,6 +1,5 @@
 package com.example.pbolibraryproject.service;
 
-
 import com.example.pbolibraryproject.models.Member;
 import com.example.pbolibraryproject.util.CSVUtil;
 import java.util.ArrayList;
@@ -113,5 +112,18 @@ public class MemberService {
             }
         }
         return String.format("M%03d", maxId + 1);
+    }
+
+    public boolean isEmailExists(String email, String excludeMemberId) {
+        for (Member member : members) {
+            // Skip checking the current member being edited
+            if (excludeMemberId != null && member.getId().equals(excludeMemberId)) {
+                continue;
+            }
+            if (member.getEmail().equalsIgnoreCase(email)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
