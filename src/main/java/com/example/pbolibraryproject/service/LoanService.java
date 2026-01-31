@@ -182,4 +182,16 @@ public class LoanService {
         }
         return String.format("L%03d", maxId + 1);
     }
+
+    public boolean memberHasActiveLoan(String memberId) {
+        for (Loan loan : getAllLoans()) {
+            if (
+                    loan.getMember().getMemberId().equals(memberId) &&
+                            !loan.getIsReturned()
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

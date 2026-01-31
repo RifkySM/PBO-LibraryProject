@@ -1,6 +1,7 @@
 package com.example.pbolibraryproject.controllers;
 
 import com.example.pbolibraryproject.models.Member;
+import com.example.pbolibraryproject.service.LoanService;
 import com.example.pbolibraryproject.service.MemberService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,11 +22,13 @@ public class MemberListController {
     @FXML private Label totalMembersLabel;
 
     private MemberService memberService;
+    private LoanService loanService;
     private ObservableList<Member> membersList;
 
     @FXML
     public void initialize() {
         memberService = new MemberService();
+        loanService = new LoanService();
         membersList = FXCollections.observableArrayList();
 
         setupTableColumns();
@@ -196,7 +199,20 @@ public class MemberListController {
     }
 
     private void deleteMember(Member member) {
-        // TODO: Show confirmation dialog
+
+        // 🔍 CEK PINJAMAN AKTIF
+        if (loanService.memberHasActiveLoan(member.getMemberId())) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Delete Member Failed");
+            alert.setHeaderText("Member masih meminjam buku");
+            alert.setContentText(
+                    "Member tidak dapat dihapus karena masih memiliki\n" +
+                            "buku yang belum dikembalikan."
+            );
+            alert.showAndWait();
+            return;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Delete Member");
         alert.setHeaderText("Delete " + member.getName() + "?");
